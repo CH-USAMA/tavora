@@ -37,7 +37,12 @@ async function seed() {
         console.log(`✅ Admin user created successfully: ${email}`);
     } catch (error: any) {
         if (error.message?.includes("already exists") || error.code === 'USER_ALREADY_EXISTS') {
-            console.log(`⚠️ Admin user ${email} already exists.`);
+            console.log(`⚠️ Admin user ${email} already exists. Ensuring they have the 'admin' role...`);
+            const { db } = await import("../src/shared/lib/db");
+            const { user } = await import("../src/shared/lib/db/schema");
+            const { eq } = await import("drizzle-orm");
+            await db.update(user).set({ role: "admin" }).where(eq(user.email, email));
+            console.log("✅ Role updated to admin.");
         } else {
             console.error("❌ Error creating admin user:", error);
             process.exit(1);
