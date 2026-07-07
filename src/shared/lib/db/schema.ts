@@ -18,6 +18,7 @@ export const user = sqliteTable("user", {
 export const session = sqliteTable("session", {
     id: text("id").primaryKey(),
     expiresAt: integer("expiresAt", { mode: "timestamp" }).notNull(),
+    token: text("token").notNull().unique(),
     ipAddress: text("ipAddress"),
     userAgent: text("userAgent"),
     userId: text("userId").notNull().references(() => user.id),

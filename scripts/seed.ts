@@ -1,7 +1,7 @@
-import { auth } from "../src/shared/lib/auth";
 import * as dotenv from "dotenv";
-
 dotenv.config({ path: ".env.local" });
+
+import { auth } from "../src/shared/lib/auth";
 
 async function seed() {
     console.log("🌱 Seeding database...");
@@ -15,15 +15,24 @@ async function seed() {
     }
 
     try {
-        // We use the admin plugin's API to create an admin user
-        const newAdmin = await auth.api.signUpEmail({
+        const newUser = await auth.api.signUpEmail({
             body: {
                 email,
                 password,
                 name: "Admin User",
-                role: "admin", // Assumes RBAC plugin setup for admin
             }
         });
+
+        // Set role to admin directly in the database
+        const { db } = await import("../src/shared/lib/db");
+        const { user } = await import("../src/shared/lib/db/schema");
+        const { eq } = await import("drizzle-orm");
+        
+        if (newUser && newUser.user) {
+            await db.update(user)
+              .set({ role: "admin" })
+              .where(eq(user.id, newUser.user.id));
+        }
 
         console.log(`✅ Admin user created successfully: ${email}`);
     } catch (error: any) {
