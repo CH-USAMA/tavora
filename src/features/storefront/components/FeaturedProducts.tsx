@@ -2,6 +2,7 @@ import { db } from "@/shared/lib/db";
 import { products } from "@/shared/lib/db/schema";
 import { eq } from "drizzle-orm";
 import Link from "next/link";
+import Image from "next/image";
 
 export async function FeaturedProducts() {
     const featuredProducts = await db
@@ -39,10 +40,11 @@ export async function FeaturedProducts() {
                         >
                             <Link href={`/product/${product.slug}`} className="relative aspect-[4/5] bg-gunmetal block overflow-hidden">
                                 {product.imageUrl ? (
-                                    <img
+                                    <Image
                                         src={product.imageUrl}
                                         alt={product.title}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center">

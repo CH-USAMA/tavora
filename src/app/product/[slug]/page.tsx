@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Metadata } from "next";
+import Image from "next/image";
 
 interface Props {
     params: { slug: string };
@@ -48,10 +49,12 @@ export default async function ProductDetailPage({ params }: Props) {
                         <div className="space-y-4">
                             <div className="aspect-[4/5] bg-charcoal rounded-sm overflow-hidden relative border border-warm-gray/10">
                                 {product.imageUrl ? (
-                                    <img 
+                                    <Image 
                                         src={product.imageUrl} 
                                         alt={product.title} 
-                                        className="w-full h-full object-cover"
+                                        fill
+                                        priority
+                                        className="object-cover"
                                     />
                                 ) : (
                                     <div className="absolute inset-0 flex items-center justify-center">
