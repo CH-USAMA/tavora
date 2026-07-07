@@ -8,6 +8,7 @@ export const createProductSchema = z.object({
   description: z.string().optional(),
   brand: z.string().optional(),
   externalUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
+  imageUrl: z.string().url().optional().or(z.literal('')),
   isVisible: z.boolean().default(true),
   isFeatured: z.boolean().default(false),
 });

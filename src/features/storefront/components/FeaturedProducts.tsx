@@ -35,16 +35,28 @@ export async function FeaturedProducts() {
                     {featuredProducts.map((product) => (
                         <div
                             key={product.id}
-                            className="group bg-charcoal border border-warm-gray/10 rounded-sm overflow-hidden transition-all duration-500 hover:border-gold/30 hover:shadow-[0_0_40px_rgba(212,175,55,0.08)]"
+                            className="group bg-charcoal border border-warm-gray/10 rounded-sm overflow-hidden transition-all duration-500 hover:border-gold/30 hover:shadow-[0_0_40px_rgba(212,175,55,0.08)] flex flex-col"
                         >
-                            <div className="aspect-square bg-gunmetal flex items-center justify-center">
-                                <span className="text-warm-gray/30 text-sm tracking-widest uppercase">Image</span>
-                            </div>
-                            <div className="p-6">
-                                <h3 className="text-lg font-serif text-white group-hover:text-gold transition-colors">
-                                    {product.title}
-                                </h3>
-                                <div className="flex items-center justify-between mt-4">
+                            <Link href={`/product/${product.slug}`} className="relative aspect-[4/5] bg-gunmetal block overflow-hidden">
+                                {product.imageUrl ? (
+                                    <img
+                                        src={product.imageUrl}
+                                        alt={product.title}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                        <span className="text-warm-gray/30 text-sm tracking-widest uppercase">No Image</span>
+                                    </div>
+                                )}
+                            </Link>
+                            <div className="p-6 flex flex-col flex-grow">
+                                <Link href={`/product/${product.slug}`}>
+                                    <h3 className="text-lg font-serif text-white group-hover:text-gold transition-colors line-clamp-1">
+                                        {product.title}
+                                    </h3>
+                                </Link>
+                                <div className="flex items-center justify-between mt-auto pt-4">
                                     <div className="flex items-baseline gap-2">
                                         <span className="text-gold font-medium">Rs. {product.price.toLocaleString()}</span>
                                         {product.salePrice && (

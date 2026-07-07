@@ -94,6 +94,7 @@ export const products = sqliteTable("products", {
     isNewArrival: integer("isNewArrival", { mode: "boolean" }).default(false),
     isVisible: integer("isVisible", { mode: "boolean" }).default(true),
     externalUrl: text("externalUrl"), // Markaz dropshipping URL
+    imageUrl: text("imageUrl"),
     seoTitle: text("seoTitle"),
     seoDescription: text("seoDescription"),
     createdAt: integer("createdAt", { mode: "timestamp" }).notNull(),

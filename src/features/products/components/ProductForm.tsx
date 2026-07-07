@@ -10,7 +10,9 @@ import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { upload } from "@vercel/blob/client";
+import Image from "next/image";
 
 export function ProductForm() {
     const router = useRouter();
@@ -26,10 +28,34 @@ export function ProductForm() {
             description: "",
             brand: "Tavora",
             externalUrl: "",
+            imageUrl: "",
             isVisible: true,
             isFeatured: false,
         },
     });
+
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        try {
+            const newBlob = await upload(file.name, file, {
+                access: 'public',
+                handleUploadUrl: '/api/upload',
+            });
+            form.setValue("imageUrl", newBlob.url);
+            toast.success("Image uploaded successfully");
+        } catch (error) {
+            console.error("Upload error:", error);
+            toast.error("Failed to upload image");
+        } finally {
+            setIsUploading(false);
+        }
+    };
 
     const onSubmit = async (data: CreateProductInput) => {
         setIsSubmitting(true);
@@ -82,6 +108,44 @@ export function ProductForm() {
                         {...form.register("description")} 
                         className="flex min-h-[120px] w-full rounded-md border border-warm-gray/20 bg-charcoal px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
                     />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                    <Label className="text-warm-gray">Product Image</Label>
+                    <div className="mt-2 flex items-center gap-6">
+                        <div 
+                            className="flex h-32 w-32 items-center justify-center rounded-md border-2 border-dashed border-warm-gray/30 bg-gunmetal overflow-hidden relative"
+                        >
+                            {form.watch("imageUrl") ? (
+                                <Image
+                                    src={form.watch("imageUrl") as string}
+                                    alt="Preview"
+                                    fill
+                                    className="object-cover"
+                                />
+                            ) : (
+                                <span className="text-xs text-warm-gray/50 uppercase tracking-widest text-center px-2">No Image</span>
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                ref={fileInputRef}
+                                onChange={handleImageUpload}
+                            />
+                            <Button 
+                                type="button" 
+                                variant="outline" 
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={isUploading}
+                                className="border-gold/50 text-gold hover:bg-gold hover:text-black transition-colors"
+                            >
+                                {isUploading ? "Uploading..." : "Upload Image"}
+                            </Button>
+                            <p className="text-xs text-warm-gray/60">JPG, PNG, WebP up to 5MB</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
