@@ -38,6 +38,8 @@ export function ProductForm({ initialData, productId }: ProductFormProps) {
             images: [],
             isVisible: true,
             isFeatured: false,
+            isBestSeller: false,
+            isNewArrival: false,
         },
     });
 
@@ -119,9 +121,25 @@ export function ProductForm({ initialData, productId }: ProductFormProps) {
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="price" className="text-warm-gray">Price (Rs)</Label>
+                    <Label htmlFor="price" className="text-warm-gray">Original Price (Rs)</Label>
                     <Input id="price" type="number" step="0.01" {...form.register("price")} className="bg-charcoal border-warm-gray/20 text-white" />
                     {form.formState.errors.price && <p className="text-red-500 text-xs">{form.formState.errors.price.message}</p>}
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="salePrice" className="text-warm-gray">
+                        Sale Price (Rs) 
+                        {(() => {
+                            const price = form.watch("price") as number;
+                            const sale = form.watch("salePrice") as number;
+                            if (sale && Number(sale) > 0 && Number(price) > 0 && Number(sale) < Number(price)) {
+                                const pct = Math.round(((Number(price) - Number(sale)) / Number(price)) * 100);
+                                return <span className="ml-2 text-xs text-red-400 font-normal">— {pct}% OFF</span>;
+                            }
+                            return null;
+                        })()}
+                    </Label>
+                    <Input id="salePrice" type="number" step="0.01" {...form.register("salePrice")} placeholder="Leave empty for no discount" className="bg-charcoal border-warm-gray/20 text-white" />
                 </div>
 
                 <div className="space-y-2">
@@ -186,7 +204,7 @@ export function ProductForm({ initialData, productId }: ProductFormProps) {
                 </div>
             </div>
 
-            <div className="flex space-x-6 p-4 bg-charcoal rounded-md border border-warm-gray/10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-charcoal rounded-md border border-warm-gray/10">
                 <div className="flex items-center space-x-2">
                     <Checkbox 
                         id="isVisible" 
@@ -194,7 +212,7 @@ export function ProductForm({ initialData, productId }: ProductFormProps) {
                         onCheckedChange={(checked) => form.setValue("isVisible", checked as boolean)} 
                         className="border-warm-gray data-[state=checked]:bg-gold data-[state=checked]:text-black"
                     />
-                    <Label htmlFor="isVisible" className="text-warm-gray">Visible on Storefront</Label>
+                    <Label htmlFor="isVisible" className="text-warm-gray text-sm">Visible</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                     <Checkbox 
@@ -203,7 +221,25 @@ export function ProductForm({ initialData, productId }: ProductFormProps) {
                         onCheckedChange={(checked) => form.setValue("isFeatured", checked as boolean)}
                         className="border-warm-gray data-[state=checked]:bg-gold data-[state=checked]:text-black"
                     />
-                    <Label htmlFor="isFeatured" className="text-warm-gray">Featured Product</Label>
+                    <Label htmlFor="isFeatured" className="text-warm-gray text-sm">Featured</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <Checkbox 
+                        id="isBestSeller" 
+                        checked={form.watch("isBestSeller")} 
+                        onCheckedChange={(checked) => form.setValue("isBestSeller", checked as boolean)}
+                        className="border-warm-gray data-[state=checked]:bg-amber-500 data-[state=checked]:text-black"
+                    />
+                    <Label htmlFor="isBestSeller" className="text-amber-400 text-sm">🏆 Best Seller</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <Checkbox 
+                        id="isNewArrival" 
+                        checked={form.watch("isNewArrival")} 
+                        onCheckedChange={(checked) => form.setValue("isNewArrival", checked as boolean)}
+                        className="border-warm-gray data-[state=checked]:bg-emerald-500 data-[state=checked]:text-black"
+                    />
+                    <Label htmlFor="isNewArrival" className="text-emerald-400 text-sm">✨ New Arrival</Label>
                 </div>
             </div>
 
