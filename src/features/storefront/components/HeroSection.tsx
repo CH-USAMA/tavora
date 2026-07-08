@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { HeroAnimations } from "./HeroAnimations";
 
 export function HeroSection() {
     const phone = "923144293848";
@@ -98,17 +99,7 @@ export function HeroSection() {
                 <div className="w-[1px] h-10 bg-gradient-to-b from-gold to-transparent animate-[pulse_2s_ease-in-out_infinite]" />
             </div>
 
-            <style jsx global>{`
-                @keyframes drift {
-                    0% { transform: translate(0, 0) scale(1); }
-                    100% { transform: translate(40px, -30px) scale(1.1); }
-                }
-                @keyframes sweep {
-                    0% { transform: translateX(-100%); opacity: 0; }
-                    50% { opacity: 1; }
-                    100% { transform: translateX(100%); opacity: 0; }
-                }
-            `}</style>
+            <HeroAnimations />
         </section>
     );
 }

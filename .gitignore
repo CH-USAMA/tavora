@@ -44,3 +44,5 @@ next-env.d.ts
 .refact
 .refact/buddy/runtime_queue.jsonl
 .refact/buddy/state.json
+.refact/buddy/state.json
+.refact/buddy/runtime_queue.jsonl
