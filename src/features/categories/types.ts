@@ -1,9 +1,12 @@
 import { z } from "zod";
 
 export const createCategorySchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  description: z.string().optional(),
-  isVisible: z.boolean(),
+    name: z.string().min(1, "Name is required"),
+    slug: z.string().min(1, "Slug is required"),
+    description: z.string().optional(),
+    image: z.string().optional(),
+    isVisible: z.boolean().default(true),
+    sortOrder: z.coerce.number().default(0)
 });
 
 export type CreateCategoryInput = z.infer<typeof createCategorySchema>;

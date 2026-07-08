@@ -9,6 +9,7 @@ export const createProductSchema = z.object({
   brand: z.string().optional(),
   externalUrl: z.string().url("Must be a valid URL").optional().or(z.literal('')),
   images: z.array(z.string()).default([]),
+  categoryId: z.string().optional().nullable(),
   isVisible: z.boolean().default(true),
   isFeatured: z.boolean().default(false),
   isBestSeller: z.boolean().default(false),

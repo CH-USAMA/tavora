@@ -2,9 +2,17 @@ import { ProductForm } from "@/features/products/components/ProductForm";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/shared/components/ui/button";
+import { db } from "@/shared/lib/db";
+import { categories } from "@/shared/lib/db/schema";
+import { asc } from "drizzle-orm";
+
 export const dynamic = "force-dynamic";
 
-export default function AddProductPage() {
+export default async function AddProductPage() {
+    const allCategories = await db.query.categories.findMany({
+        orderBy: [asc(categories.name)]
+    });
+
     return (
         <div className="space-y-6 max-w-4xl mx-auto">
             <div className="flex items-center space-x-4 mb-8">
@@ -20,7 +28,7 @@ export default function AddProductPage() {
             </div>
 
             <div className="bg-gunmetal p-6 rounded-lg shadow-md border border-warm-gray/10">
-                <ProductForm />
+                <ProductForm categories={allCategories} />
             </div>
         </div>
     );

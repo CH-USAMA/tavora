@@ -21,9 +21,10 @@ const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 interface ProductFormProps {
     initialData?: CreateProductInput;
     productId?: string;
+    categories?: { id: string; name: string }[];
 }
 
-export function ProductForm({ initialData, productId }: ProductFormProps) {
+export function ProductForm({ initialData, productId, categories = [] }: ProductFormProps) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const isEditing = !!productId;
@@ -40,6 +41,7 @@ export function ProductForm({ initialData, productId }: ProductFormProps) {
             brand: "Tavora",
             externalUrl: "",
             images: [],
+            categoryId: null,
             isVisible: true,
             isFeatured: false,
             isBestSeller: false,
@@ -131,6 +133,20 @@ export function ProductForm({ initialData, productId }: ProductFormProps) {
                     <Label htmlFor="title" className="text-warm-gray">Product Title</Label>
                     <Input id="title" {...form.register("title")} className="bg-charcoal border-warm-gray/20 text-white" />
                     {form.formState.errors.title && <p className="text-red-500 text-xs">{form.formState.errors.title.message}</p>}
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="categoryId" className="text-warm-gray">Category</Label>
+                    <select 
+                        id="categoryId" 
+                        {...form.register("categoryId")} 
+                        className="flex h-10 w-full rounded-md border border-warm-gray/20 bg-charcoal px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
+                    >
+                        <option value="">None</option>
+                        {categories.map(c => (
+                            <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="space-y-2">

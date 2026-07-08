@@ -4,6 +4,9 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/shared/components/ui/button";
 import { notFound } from "next/navigation";
+import { db } from "@/shared/lib/db";
+import { categories } from "@/shared/lib/db/schema";
+import { asc } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +17,10 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
     if (!product) {
         notFound();
     }
+
+    const allCategories = await db.query.categories.findMany({
+        orderBy: [asc(categories.name)]
+    });
 
     return (
         <div className="space-y-6 max-w-4xl mx-auto">
@@ -30,7 +37,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
             </div>
 
             <div className="bg-gunmetal p-6 rounded-lg shadow-md border border-warm-gray/10">
-                <ProductForm initialData={product as any} productId={product.id} />
+                <ProductForm initialData={product as any} productId={product.id} categories={allCategories} />
             </div>
         </div>
     );
