@@ -10,9 +10,13 @@ import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import { toast } from "sonner";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { upload } from "@vercel/blob/client";
 import Image from "next/image";
+import dynamic from "next/dynamic";
+import "react-quill-new/dist/quill.snow.css";
+
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 interface ProductFormProps {
     initialData?: CreateProductInput;
@@ -82,6 +86,20 @@ export function ProductForm({ initialData, productId }: ProductFormProps) {
         form.setValue("images", currentImages.filter((_, idx) => idx !== indexToRemove));
     };
 
+    const watchedTitle = form.watch("title");
+    const watchedSku = form.watch("sku");
+
+    useEffect(() => {
+        if (!initialData && watchedTitle && !form.formState.dirtyFields.sku && !watchedSku) {
+            const generatedSku = "TAV-" + watchedTitle
+                .toUpperCase()
+                .replace(/[^A-Z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "")
+                .substring(0, 15);
+            form.setValue("sku", generatedSku, { shouldValidate: true, shouldDirty: false });
+        }
+    }, [watchedTitle, initialData, form, watchedSku]);
+
     const onSubmit = async (data: any) => {
         setIsSubmitting(true);
         try {
@@ -150,11 +168,14 @@ export function ProductForm({ initialData, productId }: ProductFormProps) {
                 
                 <div className="space-y-2 md:col-span-2">
                     <Label htmlFor="description" className="text-warm-gray">Description</Label>
-                    <textarea 
-                        id="description" 
-                        {...form.register("description")} 
-                        className="flex min-h-[120px] w-full rounded-md border border-warm-gray/20 bg-charcoal px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold"
-                    />
+                    <div className="bg-white text-black rounded-md overflow-hidden">
+                        <ReactQuill 
+                            theme="snow"
+                            value={form.watch("description") || ""}
+                            onChange={(content) => form.setValue("description", content, { shouldDirty: true })}
+                            className="min-h-[200px]"
+                        />
+                    </div>
                 </div>
                 <div className="space-y-2 md:col-span-2">
                     <Label className="text-warm-gray">Product Images</Label>

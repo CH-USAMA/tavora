@@ -72,7 +72,11 @@ export default async function ProductDetailPage({ params }: Props) {
                                 </div>
                             </div>
                             <div className="prose prose-invert prose-p:text-warm-gray prose-p:font-light prose-p:leading-relaxed mb-12">
-                                <p>{product.description || "An exquisite piece crafted with precision and elegance."}</p>
+                                {product.description ? (
+                                    <div dangerouslySetInnerHTML={{ __html: product.description }} />
+                                ) : (
+                                    <p>An exquisite piece crafted with precision and elegance.</p>
+                                )}
                             </div>
                             <div className="mt-auto pt-8 border-t border-warm-gray/10 space-y-3">
                                 {product.externalUrl ? (

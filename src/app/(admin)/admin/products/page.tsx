@@ -18,13 +18,20 @@ export default async function AdminProductsPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <h2 className="text-2xl font-bold text-white font-serif">Products</h2>
-                <Button asChild className="bg-gold text-black hover:bg-gold-light">
-                    <Link href="/admin/products/new">
-                        <Plus className="mr-2 h-4 w-4" /> Add Product
-                    </Link>
-                </Button>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <Button asChild variant="outline" className="border-warm-gray/20 text-warm-gray hover:text-white flex-1 sm:flex-none">
+                        <Link href="/admin/products/bulk">
+                            Bulk Import
+                        </Link>
+                    </Button>
+                    <Button asChild className="bg-gold text-black hover:bg-gold-light flex-1 sm:flex-none">
+                        <Link href="/admin/products/new">
+                            <Plus className="mr-2 h-4 w-4" /> Add Product
+                        </Link>
+                    </Button>
+                </div>
             </div>
 
             <div className="bg-gunmetal rounded-md border border-warm-gray/10">
