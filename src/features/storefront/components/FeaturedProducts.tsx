@@ -1,22 +1,25 @@
 import { db } from "@/shared/lib/db";
 import { products } from "@/shared/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import Link from "next/link";
-import Image from "next/image";
+import { ProductSlider } from "./ProductSlider";
 
 export async function FeaturedProducts() {
+    // Fetch latest products instead of just any featured, to showcase new arrivals
     const featuredProducts = await db
         .select()
         .from(products)
         .where(eq(products.isVisible, true))
-        .limit(6);
+        .orderBy(desc(products.createdAt))
+        .limit(8);
 
     if (featuredProducts.length === 0) {
         return (
-            <section id="featured" className="py-24 bg-obsidian">
+            <section id="featured" className="py-24 bg-obsidian relative">
+                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
                 <div className="max-w-7xl mx-auto px-6 text-center">
-                    <span className="text-gold text-xs tracking-[0.3em] uppercase">Featured</span>
-                    <h2 className="text-4xl md:text-5xl font-serif text-white mt-4 mb-6">Our Collection</h2>
+                    <span className="text-gold text-xs tracking-[0.3em] uppercase">New Arrivals</span>
+                    <h2 className="text-4xl md:text-5xl font-serif text-white mt-4 mb-6">Latest Additions</h2>
                     <p className="text-warm-gray text-lg max-w-xl mx-auto">
                         Our curated collection of luxury watches is coming soon. Stay tuned.
                     </p>
@@ -26,62 +29,21 @@ export async function FeaturedProducts() {
     }
 
     return (
-        <section id="featured" className="py-24 bg-obsidian">
+        <section id="featured" className="py-24 bg-obsidian relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
+            
             <div className="max-w-7xl mx-auto px-6">
-                <div className="text-center mb-16">
-                    <span className="text-gold text-xs tracking-[0.3em] uppercase">Featured</span>
-                    <h2 className="text-4xl md:text-5xl font-serif text-white mt-4">Our Collection</h2>
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+                    <div>
+                        <span className="text-gold text-xs tracking-[0.3em] uppercase font-medium">New Arrivals</span>
+                        <h2 className="text-4xl md:text-5xl font-serif text-white mt-4">Latest Additions</h2>
+                    </div>
+                    <Link href="/shop" className="text-warm-gray hover:text-gold transition-colors text-sm uppercase tracking-widest border-b border-warm-gray/30 hover:border-gold pb-1 self-start md:self-auto">
+                        View All Pieces
+                    </Link>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {featuredProducts.map((product) => (
-                        <div
-                            key={product.id}
-                            className="group bg-charcoal border border-warm-gray/10 rounded-sm overflow-hidden transition-all duration-500 hover:border-gold/30 hover:shadow-[0_0_40px_rgba(212,175,55,0.08)] flex flex-col"
-                        >
-                            <Link href={`/product/${product.slug}`} className="relative aspect-[4/5] bg-gunmetal block overflow-hidden">
-                                {product.imageUrl ? (
-                                    <Image
-                                        src={product.imageUrl}
-                                        alt={product.title}
-                                        fill
-                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center">
-                                        <span className="text-warm-gray/30 text-sm tracking-widest uppercase">No Image</span>
-                                    </div>
-                                )}
-                            </Link>
-                            <div className="p-6 flex flex-col flex-grow">
-                                <Link href={`/product/${product.slug}`}>
-                                    <h3 className="text-lg font-serif text-white group-hover:text-gold transition-colors line-clamp-1">
-                                        {product.title}
-                                    </h3>
-                                </Link>
-                                <div className="flex items-center justify-between mt-auto pt-4">
-                                    <div className="flex items-baseline gap-2">
-                                        <span className="text-gold font-medium">Rs. {product.price.toLocaleString()}</span>
-                                        {product.salePrice && (
-                                            <span className="text-warm-gray/50 line-through text-sm">
-                                                Rs. {product.salePrice.toLocaleString()}
-                                            </span>
-                                        )}
-                                    </div>
-                                    {product.externalUrl && (
-                                        <a
-                                            href={product.externalUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-xs text-gold border border-gold/40 px-3 py-1.5 hover:bg-gold hover:text-black transition-all tracking-wider uppercase"
-                                        >
-                                            Buy Now
-                                        </a>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                
+                <ProductSlider products={featuredProducts} />
             </div>
         </section>
     );
