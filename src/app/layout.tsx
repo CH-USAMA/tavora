@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter } from "next/font/google";
 import { Toaster } from "@/shared/components/ui/sonner";
+import { WhatsAppButton } from "@/features/storefront/components/WhatsAppButton";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -40,6 +41,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col font-sans">
         {children}
+        <WhatsAppButton />
         <Toaster richColors position="top-right" />
       </body>
     </html>

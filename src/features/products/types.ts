@@ -11,6 +11,8 @@ export const createProductSchema = z.object({
   images: z.array(z.string()).default([]),
   isVisible: z.boolean().default(true),
   isFeatured: z.boolean().default(false),
+  isBestSeller: z.boolean().default(false),
+  isNewArrival: z.boolean().default(false),
 });
 
 export type CreateProductInput = z.infer<typeof createProductSchema>;
