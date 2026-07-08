@@ -58,5 +58,7 @@ export class ProductService {
         });
 
         return product;
+    static async deleteProduct(id: string) {
+        return await ProductRepository.delete(id);
     }
 }

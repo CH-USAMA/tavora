@@ -25,3 +25,14 @@ export async function updateProductAction(id: string, data: CreateProductInput) 
         return { success: false, error: error.message };
     }
 }
+
+export async function deleteProductAction(id: string) {
+    try {
+        await ProductService.deleteProduct(id);
+        revalidatePath("/admin/products");
+        return { success: true };
+    } catch (error: any) {
+        console.error("Failed to delete product:", error);
+        return { success: false, error: error.message };
+    }
+}

@@ -7,8 +7,9 @@ import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-export default async function EditProductPage({ params }: { params: { id: string } }) {
-    const product = await ProductService.getProduct(params.id);
+export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
+    const p = await params;
+    const product = await ProductService.getProduct(p.id);
     
     if (!product) {
         notFound();

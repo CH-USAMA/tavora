@@ -85,6 +85,12 @@ export class ProductRepository {
         return product;
     }
 
+    static async delete(id: string) {
+        await db.delete(productImages).where(eq(productImages.productId, id));
+        const [product] = await db.delete(products).where(eq(products.id, id)).returning();
+        return product;
+    }
+
     static async findAll() {
         return db.select().from(products).orderBy(products.createdAt);
     }

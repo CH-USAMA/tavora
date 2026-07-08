@@ -3,6 +3,7 @@ import { products } from "@/shared/lib/db/schema";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/shared/components/ui/button";
+import { DeleteProductButton } from "@/features/products/components/DeleteProductButton";
 import {
     Table,
     TableBody,
@@ -56,9 +57,12 @@ export default async function AdminProductsPage() {
                                         </span>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <Button asChild variant="ghost" size="sm" className="text-warm-gray hover:text-gold hover:bg-transparent">
-                                            <Link href={`/admin/products/${product.id}/edit`}>Edit</Link>
-                                        </Button>
+                                        <div className="flex items-center justify-end gap-2">
+                                            <Button asChild variant="ghost" size="sm" className="text-warm-gray hover:text-gold hover:bg-transparent">
+                                                <Link href={`/admin/products/${product.id}/edit`}>Edit</Link>
+                                            </Button>
+                                            <DeleteProductButton id={product.id} productName={product.title} />
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             ))
