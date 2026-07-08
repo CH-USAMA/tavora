@@ -11,12 +11,11 @@ export function AboutSection() {
                     {/* Founder Image Side */}
                     <div className="relative order-2 lg:order-1">
                         <div className="relative aspect-[3/4] w-full max-w-md mx-auto lg:mx-0 rounded-sm overflow-hidden border border-warm-gray/20 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-                            {/* USER: Replace this src with Taha Munawar's image URL */}
                             <Image 
-                                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop" 
+                                src="/images/Taha.png" 
                                 alt="Taha Munawar - Founder of Tavora" 
                                 fill
-                                className="object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                                className="object-cover object-top transition-all duration-700"
                             />
                             
                             {/* Decorative Frame */}
