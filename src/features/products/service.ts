@@ -26,6 +26,8 @@ export class ProductService {
             ...data,
             slug,
             id,
+        });
+
         return product;
     }
 
