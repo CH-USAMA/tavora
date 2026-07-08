@@ -26,6 +26,33 @@ export class ProductService {
             ...data,
             slug,
             id,
+        return product;
+    }
+
+    static async getProduct(id: string) {
+        return await ProductRepository.findById(id);
+    }
+
+    static async updateProduct(id: string, input: CreateProductInput) {
+        const parsed = createProductSchema.safeParse(input);
+        if (!parsed.success) {
+            throw new Error("Invalid product data");
+        }
+
+        const data = parsed.data;
+
+        let slug: string | undefined = undefined;
+        if (data.title) {
+            slug = data.title
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/(^-|-$)+/g, "")
+                + "-" + crypto.randomBytes(3).toString("hex");
+        }
+
+        const product = await ProductRepository.update(id, {
+            ...data,
+            slug,
         });
 
         return product;

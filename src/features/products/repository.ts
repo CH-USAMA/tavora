@@ -37,6 +37,54 @@ export class ProductRepository {
         return product;
     }
 
+    static async findById(id: string) {
+        const product = await db.select().from(products).where(eq(products.id, id)).get();
+        if (!product) return null;
+        
+        const images = await db.select().from(productImages).where(eq(productImages.productId, id));
+        images.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        
+        return {
+            ...product,
+            images: images.length > 0 ? images.map(i => i.url) : (product.imageUrl ? [product.imageUrl] : []),
+        };
+    }
+
+    static async update(id: string, data: CreateProductInput & { slug?: string }) {
+        const sanitizedData = {
+            ...data,
+            salePrice: data.salePrice === "" ? null : data.salePrice,
+            sku: data.sku === "" ? null : data.sku,
+            externalUrl: data.externalUrl === "" ? null : data.externalUrl,
+            imageUrl: data.images && data.images.length > 0 ? data.images[0] : null,
+        };
+        
+        const { images, ...productDataToUpdate } = sanitizedData;
+        
+        const [product] = await db.update(products).set({
+            ...productDataToUpdate,
+            updatedAt: new Date(),
+        }).where(eq(products.id, id)).returning();
+        
+        if (images !== undefined) {
+            // Delete old images
+            await db.delete(productImages).where(eq(productImages.productId, id));
+            // Insert new images
+            if (images.length > 0) {
+                const imagesToInsert = images.map((url, idx) => ({
+                    id: randomUUID(),
+                    productId: id,
+                    url,
+                    sortOrder: idx,
+                    isPrimary: idx === 0
+                }));
+                await db.insert(productImages).values(imagesToInsert);
+            }
+        }
+        
+        return product;
+    }
+
     static async findAll() {
         return db.select().from(products).orderBy(products.createdAt);
     }

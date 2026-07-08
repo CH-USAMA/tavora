@@ -1,10 +1,19 @@
 import { ProductForm } from "@/features/products/components/ProductForm";
+import { ProductService } from "@/features/products/service";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/shared/components/ui/button";
+import { notFound } from "next/navigation";
+
 export const dynamic = "force-dynamic";
 
-export default function AddProductPage() {
+export default async function EditProductPage({ params }: { params: { id: string } }) {
+    const product = await ProductService.getProduct(params.id);
+    
+    if (!product) {
+        notFound();
+    }
+
     return (
         <div className="space-y-6 max-w-4xl mx-auto">
             <div className="flex items-center space-x-4 mb-8">
@@ -14,13 +23,13 @@ export default function AddProductPage() {
                     </Link>
                 </Button>
                 <div>
-                    <h2 className="text-2xl font-bold text-white font-serif">Add New Product</h2>
-                    <p className="text-sm text-warm-gray">Create a new product listing in your store</p>
+                    <h2 className="text-2xl font-bold text-white font-serif">Edit Product</h2>
+                    <p className="text-sm text-warm-gray">Update existing product information</p>
                 </div>
             </div>
 
             <div className="bg-gunmetal p-6 rounded-lg shadow-md border border-warm-gray/10">
-                <ProductForm />
+                <ProductForm initialData={product as any} productId={product.id} />
             </div>
         </div>
     );

@@ -34,6 +34,7 @@ export default async function AdminProductsPage() {
                             <TableHead className="text-warm-gray">SKU</TableHead>
                             <TableHead className="text-warm-gray">Price</TableHead>
                             <TableHead className="text-warm-gray text-right">Status</TableHead>
+                            <TableHead className="text-warm-gray text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -53,6 +54,11 @@ export default async function AdminProductsPage() {
                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${product.isVisible ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                                             {product.isVisible ? 'Active' : 'Draft'}
                                         </span>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <Button asChild variant="ghost" size="sm" className="text-warm-gray hover:text-gold hover:bg-transparent">
+                                            <Link href={`/admin/products/${product.id}/edit`}>Edit</Link>
+                                        </Button>
                                     </TableCell>
                                 </TableRow>
                             ))

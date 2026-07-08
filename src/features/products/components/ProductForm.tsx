@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createProductSchema, CreateProductInput } from "../types";
-import { createProductAction } from "../actions";
+import { createProductAction, updateProductAction } from "../actions";
 import { useRouter } from "next/navigation";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -14,14 +14,20 @@ import { useState, useRef } from "react";
 import { upload } from "@vercel/blob/client";
 import Image from "next/image";
 
-export function ProductForm() {
+interface ProductFormProps {
+    initialData?: CreateProductInput;
+    productId?: string;
+}
+
+export function ProductForm({ initialData, productId }: ProductFormProps) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const isEditing = !!productId;
 
     const form = useForm<CreateProductInput>({
         // @ts-ignore: Zod coerce types conflict with RHF resolver types
         resolver: zodResolver(createProductSchema),
-        defaultValues: {
+        defaultValues: initialData || {
             title: "",
             sku: "",
             price: 0,
@@ -45,12 +51,13 @@ export function ProductForm() {
         setIsUploading(true);
         try {
             const currentImages = form.getValues("images") || [];
-            const uploadPromises = Array.from(files).map(file => 
-                upload(file.name, file, {
+            const uploadPromises = Array.from(files).map(file => {
+                const uniqueFilename = `${Date.now()}-${Math.random().toString(36).substring(7)}-${file.name}`;
+                return upload(uniqueFilename, file, {
                     access: 'public',
                     handleUploadUrl: '/api/upload',
-                })
-            );
+                });
+            });
             
             const results = await Promise.all(uploadPromises);
             const newUrls = results.map(blob => blob.url);
@@ -76,13 +83,19 @@ export function ProductForm() {
     const onSubmit = async (data: any) => {
         setIsSubmitting(true);
         try {
-            // Convert empty string salePrice to undefined or number if needed
-            const result = await createProductAction(data);
-            if (result.success) {
-                toast.success("Product created successfully");
-                router.push("/admin/products");
+            let result;
+            if (isEditing && productId) {
+                result = await updateProductAction(productId, data);
             } else {
-                toast.error(result.error || "Failed to create product");
+                result = await createProductAction(data);
+            }
+
+            if (result.success) {
+                toast.success(isEditing ? "Product updated successfully" : "Product created successfully");
+                router.push("/admin/products");
+                router.refresh();
+            } else {
+                toast.error(result.error || (isEditing ? "Failed to update product" : "Failed to create product"));
             }
         } catch (error) {
             toast.error("An unexpected error occurred");
@@ -199,7 +212,7 @@ export function ProductForm() {
                     Cancel
                 </Button>
                 <Button type="submit" disabled={isSubmitting} className="bg-gold text-black hover:bg-gold-light">
-                    {isSubmitting ? "Saving..." : "Save Product"}
+                    {isSubmitting ? "Saving..." : (isEditing ? "Update Product" : "Save Product")}
                 </Button>
             </div>
         </form>
