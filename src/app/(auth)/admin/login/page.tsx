@@ -23,7 +23,7 @@ export default function AdminLoginPage() {
             });
 
             if (error) {
-                setError(error.message);
+                setError(error.message || "An error occurred during login.");
                 return;
             }
 

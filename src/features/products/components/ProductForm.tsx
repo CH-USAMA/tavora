@@ -19,6 +19,7 @@ export function ProductForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<CreateProductInput>({
+        // @ts-ignore: Zod coerce types conflict with RHF resolver types
         resolver: zodResolver(createProductSchema),
         defaultValues: {
             title: "",
@@ -57,7 +58,7 @@ export function ProductForm() {
         }
     };
 
-    const onSubmit = async (data: CreateProductInput) => {
+    const onSubmit = async (data: any) => {
         setIsSubmitting(true);
         try {
             // Convert empty string salePrice to undefined or number if needed

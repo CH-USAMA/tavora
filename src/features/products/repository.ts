@@ -5,8 +5,15 @@ import { eq } from "drizzle-orm";
 
 export class ProductRepository {
     static async create(data: CreateProductInput & { slug: string; id: string }) {
-        const [product] = await db.insert(products).values({
+        const sanitizedData = {
             ...data,
+            salePrice: data.salePrice === "" ? undefined : data.salePrice,
+            sku: data.sku === "" ? undefined : data.sku,
+            externalUrl: data.externalUrl === "" ? undefined : data.externalUrl,
+            imageUrl: data.imageUrl === "" ? undefined : data.imageUrl,
+        };
+        const [product] = await db.insert(products).values({
+            ...sanitizedData,
             createdAt: new Date(),
             updatedAt: new Date(),
         }).returning();

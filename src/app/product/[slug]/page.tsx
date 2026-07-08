@@ -9,14 +9,16 @@ import { ArrowLeft } from "lucide-react";
 import { Metadata } from "next";
 import Image from "next/image";
 
+export const dynamic = "force-dynamic";
+
 interface Props {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const [product] = await db.select().from(products).where(eq(products.slug, params.slug));
+    const p = await params;
+    const [product] = await db.select().from(products).where(eq(products.slug, p.slug));
     if (!product) return { title: "Product Not Found" };
-
     return {
         title: `${product.seoTitle || product.title} | Tavora`,
         description: product.seoDescription || product.description?.substring(0, 160),
@@ -24,10 +26,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProductDetailPage({ params }: Props) {
-    const [product] = await db
-        .select()
-        .from(products)
-        .where(eq(products.slug, params.slug));
+    const p = await params;
+    const [product] = await db.select().from(products).where(eq(products.slug, p.slug));
 
     if (!product || !product.isVisible) {
         notFound();
@@ -36,26 +36,17 @@ export default async function ProductDetailPage({ params }: Props) {
     return (
         <div className="min-h-screen flex flex-col bg-obsidian">
             <Navbar />
-            
             <main className="flex-grow pt-32 pb-24">
                 <div className="max-w-7xl mx-auto px-6">
-                    <Link href="/" className="inline-flex items-center text-sm text-warm-gray hover:text-gold transition-colors mb-8 uppercase tracking-widest">
+                    <Link href="/shop" className="inline-flex items-center text-sm text-warm-gray hover:text-gold transition-colors mb-8 uppercase tracking-widest">
                         <ArrowLeft className="w-4 h-4 mr-2" />
-                        Back to Collection
+                        Back to Shop
                     </Link>
-
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                        {/* Image Gallery */}
                         <div className="space-y-4">
                             <div className="aspect-[4/5] bg-charcoal rounded-sm overflow-hidden relative border border-warm-gray/10">
                                 {product.imageUrl ? (
-                                    <Image 
-                                        src={product.imageUrl} 
-                                        alt={product.title} 
-                                        fill
-                                        priority
-                                        className="object-cover"
-                                    />
+                                    <Image src={product.imageUrl} alt={product.title} fill priority className="object-cover" />
                                 ) : (
                                     <div className="absolute inset-0 flex items-center justify-center">
                                         <span className="text-warm-gray/30 tracking-widest uppercase">No Image Available</span>
@@ -63,8 +54,6 @@ export default async function ProductDetailPage({ params }: Props) {
                                 )}
                             </div>
                         </div>
-
-                        {/* Product Info */}
                         <div className="flex flex-col">
                             <div className="mb-8 border-b border-warm-gray/10 pb-8">
                                 <span className="text-gold text-xs tracking-[0.3em] uppercase mb-4 block">
@@ -84,19 +73,13 @@ export default async function ProductDetailPage({ params }: Props) {
                                     )}
                                 </div>
                             </div>
-
                             <div className="prose prose-invert prose-p:text-warm-gray prose-p:font-light prose-p:leading-relaxed mb-12">
                                 <p>{product.description || "An exquisite piece crafted with precision and elegance."}</p>
                             </div>
-
                             <div className="mt-auto pt-8 border-t border-warm-gray/10">
                                 {product.externalUrl ? (
-                                    <a
-                                        href={product.externalUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="block w-full py-5 text-center bg-gold text-black hover:bg-gold-light transition-all uppercase tracking-[0.2em] text-sm font-medium"
-                                    >
+                                    <a href={product.externalUrl} target="_blank" rel="noopener noreferrer"
+                                        className="block w-full py-5 text-center bg-gold text-black hover:bg-gold-light transition-all uppercase tracking-[0.2em] text-sm font-medium">
                                         Purchase via Official Retailer
                                     </a>
                                 ) : (
@@ -112,7 +95,6 @@ export default async function ProductDetailPage({ params }: Props) {
                     </div>
                 </div>
             </main>
-
             <Footer />
         </div>
     );

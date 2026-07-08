@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
             return NextResponse.next();
         }
 
-        const { data: session } = await betterFetch<Session>(
+        const { data: session } = await betterFetch<any>(
             "/api/auth/get-session",
             {
                 baseURL: request.nextUrl.origin,
