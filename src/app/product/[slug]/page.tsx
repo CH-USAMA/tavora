@@ -64,7 +64,7 @@ export default async function ProductDetailPage({ params }: Props) {
                                     <span className="text-2xl text-gold font-light">
                                         Rs. {product.price.toLocaleString()}
                                     </span>
-                                    {product.salePrice && (
+                                    {product.salePrice != null && product.salePrice > 0 && (
                                         <span className="text-lg text-warm-gray/50 line-through">
                                             Rs. {product.salePrice.toLocaleString()}
                                         </span>

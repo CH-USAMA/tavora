@@ -91,7 +91,7 @@ export function ProductSlider({ products }: ProductSliderProps) {
                             <div className="flex items-center justify-between mt-auto pt-4">
                                 <div className="flex items-baseline gap-2">
                                     <span className="text-gold font-medium">Rs. {product.price.toLocaleString()}</span>
-                                    {product.salePrice && (
+                                    {product.salePrice != null && product.salePrice > 0 && (
                                         <span className="text-warm-gray/50 line-through text-sm">
                                             Rs. {product.salePrice.toLocaleString()}
                                         </span>

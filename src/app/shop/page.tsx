@@ -138,7 +138,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                                                 {product.isNewArrival && (
                                                     <span className="absolute top-4 left-4 bg-gold text-black text-[10px] tracking-widest uppercase px-3 py-1">New</span>
                                                 )}
-                                                {product.salePrice && (
+                                                {product.salePrice != null && product.salePrice > 0 && (
                                                     <span className="absolute top-4 right-4 bg-red-600 text-white text-[10px] tracking-widest uppercase px-3 py-1">Sale</span>
                                                 )}
                                             </Link>
@@ -149,7 +149,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                                                 </Link>
                                                 <div className="flex items-baseline gap-2 mt-auto pt-4">
                                                     <span className="text-gold font-medium">Rs. {product.price.toLocaleString()}</span>
-                                                    {product.salePrice && (
+                                                    {product.salePrice != null && product.salePrice > 0 && (
                                                         <span className="text-warm-gray/50 line-through text-sm">Rs. {product.salePrice.toLocaleString()}</span>
                                                     )}
                                                 </div>

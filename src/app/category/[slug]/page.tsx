@@ -81,7 +81,7 @@ export default async function CategoryPage({ params }: Props) {
                                         </Link>
                                         <div className="flex items-baseline gap-2 mt-auto pt-4">
                                             <span className="text-gold font-medium">Rs. {product.price.toLocaleString()}</span>
-                                            {product.salePrice && (
+                                            {product.salePrice != null && product.salePrice > 0 && (
                                                 <span className="text-warm-gray/50 line-through text-sm">Rs. {product.salePrice.toLocaleString()}</span>
                                             )}
                                         </div>
