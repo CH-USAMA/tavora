@@ -85,16 +85,36 @@ export default function BulkUploadProductsPage() {
         });
     };
 
+    const handleDownloadSample = () => {
+        const sampleHeaders = ["title", "price", "sku", "salePrice", "brand", "description", "images", "isBestSeller", "isNewArrival", "isFeatured", "isVisible"];
+        const sampleRow = ["Rolex Submariner", "1500000", "TAV-ROLEX-SUB", "1450000", "Rolex", "<p>A classic timepiece.</p>", "https://example.com/image1.jpg, https://example.com/image2.jpg", "true", "true", "false", "true"];
+        const csvContent = [sampleHeaders.join(","), sampleRow.join(",")].join("\n");
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "tavora_sample_products.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <div className="max-w-4xl mx-auto space-y-8">
-            <div className="flex items-center gap-4">
-                <Button variant="ghost" size="icon" asChild className="hover:bg-charcoal text-warm-gray">
-                    <Link href="/admin/products"><ArrowLeft className="w-4 h-4" /></Link>
-                </Button>
-                <div>
-                    <h1 className="text-3xl font-serif text-white">Bulk Import Products</h1>
-                    <p className="text-warm-gray mt-2">Upload a CSV file to add multiple products at once.</p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                    <Button variant="ghost" size="icon" asChild className="hover:bg-charcoal text-warm-gray shrink-0">
+                        <Link href="/admin/products"><ArrowLeft className="w-4 h-4" /></Link>
+                    </Button>
+                    <div>
+                        <h1 className="text-3xl font-serif text-white">Bulk Import Products</h1>
+                        <p className="text-warm-gray mt-2 text-sm">Upload a CSV file to add multiple products at once.</p>
+                    </div>
                 </div>
+                <Button onClick={handleDownloadSample} variant="outline" className="border-warm-gray/20 text-warm-gray hover:text-white flex items-center gap-2">
+                    <FileText className="w-4 h-4" /> Download Sample CSV
+                </Button>
             </div>
 
             <div className="bg-charcoal rounded-lg p-8 border border-warm-gray/10">
