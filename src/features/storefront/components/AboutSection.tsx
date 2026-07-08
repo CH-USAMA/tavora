@@ -12,7 +12,7 @@ export function AboutSection() {
                     <div className="relative order-2 lg:order-1">
                         <div className="relative aspect-[3/4] w-full max-w-md mx-auto lg:mx-0 rounded-sm overflow-hidden border border-warm-gray/20 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
                             <Image 
-                                src="/images/Taha.png?v=2" 
+                                src="/images/Taha.png" 
                                 alt="Taha Munawar - Founder of Tavora" 
                                 fill
                                 className="object-cover object-top transition-all duration-700"
