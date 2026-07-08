@@ -1,5 +1,5 @@
 import { db } from "@/shared/lib/db";
-import { products } from "@/shared/lib/db/schema";
+import { products, productImages } from "@/shared/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { Navbar } from "@/features/storefront/components/Navbar";
 import { Footer } from "@/features/storefront/components/Footer";
@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Metadata } from "next";
-import Image from "next/image";
+import { ProductGallery } from "@/features/products/components/ProductGallery";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +33,14 @@ export default async function ProductDetailPage({ params }: Props) {
         notFound();
     }
 
+    const allImages = await db.select().from(productImages).where(eq(productImages.productId, product.id));
+    allImages.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+
+    // Fallback for older products that only have imageUrl
+    const galleryImages = allImages.length > 0 
+        ? allImages.map(img => ({ url: img.url, alt: img.alt }))
+        : product.imageUrl ? [{ url: product.imageUrl, alt: product.title }] : [];
+
     return (
         <div className="min-h-screen flex flex-col bg-obsidian">
             <Navbar />
@@ -43,17 +51,7 @@ export default async function ProductDetailPage({ params }: Props) {
                         Back to Shop
                     </Link>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                        <div className="space-y-4">
-                            <div className="aspect-[4/5] bg-charcoal rounded-sm overflow-hidden relative border border-warm-gray/10">
-                                {product.imageUrl ? (
-                                    <Image src={product.imageUrl} alt={product.title} fill priority className="object-cover" />
-                                ) : (
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <span className="text-warm-gray/30 tracking-widest uppercase">No Image Available</span>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                        <ProductGallery images={galleryImages} />
                         <div className="flex flex-col">
                             <div className="mb-8 border-b border-warm-gray/10 pb-8">
                                 <span className="text-gold text-xs tracking-[0.3em] uppercase mb-4 block">

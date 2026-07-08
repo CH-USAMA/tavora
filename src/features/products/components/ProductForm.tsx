@@ -29,7 +29,7 @@ export function ProductForm() {
             description: "",
             brand: "Tavora",
             externalUrl: "",
-            imageUrl: "",
+            images: [],
             isVisible: true,
             isFeatured: false,
         },
@@ -39,23 +39,38 @@ export function ProductForm() {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (!file) return;
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
 
         setIsUploading(true);
         try {
-            const newBlob = await upload(file.name, file, {
-                access: 'public',
-                handleUploadUrl: '/api/upload',
-            });
-            form.setValue("imageUrl", newBlob.url);
-            toast.success("Image uploaded successfully");
+            const currentImages = form.getValues("images") || [];
+            const uploadPromises = Array.from(files).map(file => 
+                upload(file.name, file, {
+                    access: 'public',
+                    handleUploadUrl: '/api/upload',
+                })
+            );
+            
+            const results = await Promise.all(uploadPromises);
+            const newUrls = results.map(blob => blob.url);
+            
+            form.setValue("images", [...currentImages, ...newUrls]);
+            toast.success("Images uploaded successfully");
         } catch (error) {
             console.error("Upload error:", error);
-            toast.error("Failed to upload image");
+            toast.error("Failed to upload images");
         } finally {
             setIsUploading(false);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
         }
+    };
+
+    const removeImage = (indexToRemove: number) => {
+        const currentImages = form.getValues("images") || [];
+        form.setValue("images", currentImages.filter((_, idx) => idx !== indexToRemove));
     };
 
     const onSubmit = async (data: any) => {
@@ -111,40 +126,48 @@ export function ProductForm() {
                     />
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                    <Label className="text-warm-gray">Product Image</Label>
-                    <div className="mt-2 flex items-center gap-6">
-                        <div 
-                            className="flex h-32 w-32 items-center justify-center rounded-md border-2 border-dashed border-warm-gray/30 bg-gunmetal overflow-hidden relative"
-                        >
-                            {form.watch("imageUrl") ? (
-                                <Image
-                                    src={form.watch("imageUrl") as string}
-                                    alt="Preview"
-                                    fill
-                                    className="object-cover"
-                                />
-                            ) : (
-                                <span className="text-xs text-warm-gray/50 uppercase tracking-widest text-center px-2">No Image</span>
-                            )}
+                    <Label className="text-warm-gray">Product Images</Label>
+                    <div className="mt-2 space-y-4">
+                        <div className="flex flex-wrap gap-4">
+                            {(form.watch("images") || []).map((url, idx) => (
+                                <div key={idx} className="relative flex h-32 w-32 items-center justify-center rounded-md border border-warm-gray/30 bg-gunmetal overflow-hidden group">
+                                    <Image
+                                        src={url}
+                                        alt={`Preview ${idx + 1}`}
+                                        fill
+                                        className="object-cover"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => removeImage(idx)}
+                                        className="absolute top-1 right-1 bg-red-500/80 hover:bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                        aria-label="Remove image"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            ))}
+                            <div 
+                                className="flex h-32 w-32 items-center justify-center rounded-md border-2 border-dashed border-warm-gray/30 bg-gunmetal overflow-hidden relative cursor-pointer hover:border-gold/50 transition-colors"
+                                onClick={() => fileInputRef.current?.click()}
+                            >
+                                <span className="text-xs text-warm-gray/50 uppercase tracking-widest text-center px-2">
+                                    {isUploading ? "Uploading..." : "+ Add Images"}
+                                </span>
+                            </div>
                         </div>
                         <div className="space-y-2">
                             <input
                                 type="file"
                                 accept="image/*"
+                                multiple
                                 className="hidden"
                                 ref={fileInputRef}
                                 onChange={handleImageUpload}
                             />
-                            <Button 
-                                type="button" 
-                                variant="outline" 
-                                onClick={() => fileInputRef.current?.click()}
-                                disabled={isUploading}
-                                className="border-gold/50 text-gold hover:bg-gold hover:text-black transition-colors"
-                            >
-                                {isUploading ? "Uploading..." : "Upload Image"}
-                            </Button>
-                            <p className="text-xs text-warm-gray/60">JPG, PNG, WebP up to 5MB</p>
+                            <p className="text-xs text-warm-gray/60">JPG, PNG, WebP up to 5MB. You can select multiple files.</p>
                         </div>
                     </div>
                 </div>
