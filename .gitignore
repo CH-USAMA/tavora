@@ -42,3 +42,5 @@ next-env.d.ts
 
 .vercel
 .refact
+.refact/buddy/runtime_queue.jsonl
+.refact/buddy/state.json
