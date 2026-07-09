@@ -11,6 +11,8 @@ export class ProductRepository {
             salePrice: data.salePrice === "" ? undefined : data.salePrice,
             sku: data.sku === "" ? undefined : data.sku,
             externalUrl: data.externalUrl === "" ? undefined : data.externalUrl,
+            categoryId: data.categoryId === "" ? undefined : data.categoryId,
+            collectionId: data.collectionId === "" ? undefined : data.collectionId,
             imageUrl: data.images && data.images.length > 0 ? data.images[0] : undefined,
         };
         
@@ -56,6 +58,8 @@ export class ProductRepository {
             salePrice: data.salePrice === "" ? null : data.salePrice,
             sku: data.sku === "" ? null : data.sku,
             externalUrl: data.externalUrl === "" ? null : data.externalUrl,
+            categoryId: data.categoryId === "" ? null : data.categoryId,
+            collectionId: data.collectionId === "" ? null : data.collectionId,
             imageUrl: data.images && data.images.length > 0 ? data.images[0] : null,
         };
         
