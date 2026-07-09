@@ -8,6 +8,8 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Metadata } from "next";
 import { ProductGallery } from "@/features/products/components/ProductGallery";
+import { SettingsService } from "@/features/settings/service";
+import DOMPurify from "isomorphic-dompurify";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +38,8 @@ export default async function ProductDetailPage({ params }: Props) {
     const allImages = await db.select().from(productImages).where(eq(productImages.productId, product.id));
     allImages.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
 
+    const settings = await SettingsService.getSiteSettings();
+
     // Fallback for older products that only have imageUrl
     const galleryImages = allImages.length > 0 
         ? allImages.map(img => ({ url: img.url, alt: img.alt }))
@@ -62,18 +66,18 @@ export default async function ProductDetailPage({ params }: Props) {
                                 </h1>
                                 <div className="flex items-end gap-4">
                                     <span className="text-2xl text-gold font-light">
-                                        Rs. {product.price.toLocaleString()}
+                                        Rs. {(product.salePrice && product.salePrice > 0 && product.salePrice < product.price ? product.salePrice : product.price).toLocaleString()}
                                     </span>
-                                    {product.salePrice != null && product.salePrice > 0 && (
+                                    {product.salePrice != null && product.salePrice > 0 && product.salePrice < product.price && (
                                         <span className="text-lg text-warm-gray/50 line-through">
-                                            Rs. {product.salePrice.toLocaleString()}
+                                            Rs. {product.price.toLocaleString()}
                                         </span>
                                     )}
                                 </div>
                             </div>
                             <div className="prose prose-invert prose-p:text-warm-gray prose-p:font-light prose-p:leading-relaxed mb-12">
                                 {product.description ? (
-                                    <div dangerouslySetInnerHTML={{ __html: product.description }} />
+                                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description) }} />
                                 ) : (
                                     <p>An exquisite piece crafted with precision and elegance.</p>
                                 )}
@@ -91,7 +95,7 @@ export default async function ProductDetailPage({ params }: Props) {
                                 )}
                                 {/* WhatsApp Buy Button */}
                                 <a
-                                    href={`https://wa.me/923144293848?text=${encodeURIComponent(`Hi! I'm interested in buying: ${product.title} — Rs. ${(product.salePrice && product.salePrice > 0 ? product.salePrice : product.price).toLocaleString()}. Can you help me?`)}`}
+                                    href={`https://wa.me/${settings.whatsappNumber}?text=${encodeURIComponent(`Hi! I'm interested in buying: ${product.title} — Rs. ${(product.salePrice && product.salePrice > 0 ? product.salePrice : product.price).toLocaleString()}. Can you help me?`)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex items-center justify-center gap-3 w-full py-4 text-center bg-[#25D366] hover:bg-[#20c55a] text-white transition-all uppercase tracking-[0.2em] text-sm font-medium shadow-[0_4px_20px_rgba(37,211,102,0.3)]"

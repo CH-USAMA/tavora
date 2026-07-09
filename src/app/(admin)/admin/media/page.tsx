@@ -1,10 +1,23 @@
-export default function AdminMediaPage() {
+import { MediaLibrary } from "@/features/media/components/MediaLibrary";
+import { listMediaAction } from "@/features/media/actions";
+
+export const dynamic = "force-dynamic";
+
+export default async function AdminMediaPage() {
+    const result = await listMediaAction();
+
     return (
         <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white font-serif">Media Library</h2>
-            <div className="p-6 bg-gunmetal rounded-lg border border-warm-gray/10">
-                <p className="text-warm-gray">Media library — coming soon.</p>
+            <div>
+                <h2 className="text-2xl font-bold text-white font-serif">Media Library</h2>
+                <p className="text-sm text-warm-gray mt-1">Manage all uploaded images.</p>
             </div>
+
+            <MediaLibrary
+                initialBlobs={result.blobs}
+                initialCursor={result.cursor}
+                initialHasMore={result.hasMore}
+            />
         </div>
     );
 }

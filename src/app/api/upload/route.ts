@@ -5,16 +5,17 @@ import { auth } from '@/shared/lib/auth'; // Ensure only authenticated admins ca
 export async function POST(request: Request): Promise<NextResponse> {
   const body = (await request.json()) as HandleUploadBody;
 
+  const session = await auth.api.getSession({ headers: request.headers });
+  if (!session || session.user.role !== "admin") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const jsonResponse = await handleUpload({
       body,
       request,
       onBeforeGenerateToken: async (pathname) => {
-        // This runs on the server before the client uploads the file to Vercel Blob
-        
-        // 1. Check for authentication (Optional but highly recommended)
-        // In a real app, verify the user is logged in and is an admin here.
-        // If not authenticated, throw an error.
+        // Auth is verified above, before any upload token is issued
 
         return {
           allowedContentTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],

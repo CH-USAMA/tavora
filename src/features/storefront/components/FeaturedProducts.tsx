@@ -3,15 +3,19 @@ import { products } from "@/shared/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import Link from "next/link";
 import { ProductSlider } from "./ProductSlider";
+import { SettingsService } from "@/features/settings/service";
 
 export async function FeaturedProducts() {
     // Fetch latest products instead of just any featured, to showcase new arrivals
-    const featuredProducts = await db
-        .select()
-        .from(products)
-        .where(eq(products.isVisible, true))
-        .orderBy(desc(products.createdAt))
-        .limit(8);
+    const [featuredProducts, settings] = await Promise.all([
+        db
+            .select()
+            .from(products)
+            .where(eq(products.isVisible, true))
+            .orderBy(desc(products.createdAt))
+            .limit(8),
+        SettingsService.getSiteSettings(),
+    ]);
 
     if (featuredProducts.length === 0) {
         return (
@@ -43,7 +47,7 @@ export async function FeaturedProducts() {
                     </Link>
                 </div>
                 
-                <ProductSlider products={featuredProducts} />
+                <ProductSlider products={featuredProducts} whatsappNumber={settings.whatsappNumber} />
             </div>
         </section>
     );

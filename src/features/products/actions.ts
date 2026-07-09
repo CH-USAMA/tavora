@@ -3,9 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { ProductService } from "./service";
 import { CreateProductInput } from "./types";
+import { requireAdmin } from "@/shared/lib/auth/require-admin";
 
 export async function createProductAction(data: CreateProductInput) {
     try {
+        await requireAdmin();
         const product = await ProductService.createProduct(data);
         revalidatePath("/admin/products");
         return { success: true, product };
@@ -16,6 +18,7 @@ export async function createProductAction(data: CreateProductInput) {
 }
 export async function updateProductAction(id: string, data: CreateProductInput) {
     try {
+        await requireAdmin();
         const product = await ProductService.updateProduct(id, data);
         revalidatePath("/admin/products");
         revalidatePath(`/product/${product.slug}`);
@@ -28,6 +31,7 @@ export async function updateProductAction(id: string, data: CreateProductInput) 
 
 export async function deleteProductAction(id: string) {
     try {
+        await requireAdmin();
         await ProductService.deleteProduct(id);
         revalidatePath("/admin/products");
         return { success: true };

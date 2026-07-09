@@ -2,8 +2,10 @@ import { db } from "@/shared/lib/db";
 import { products } from "@/shared/lib/db/schema";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import { desc, count } from "drizzle-orm";
 import { Button } from "@/shared/components/ui/button";
 import { DeleteProductButton } from "@/features/products/components/DeleteProductButton";
+import { Pagination } from "@/shared/components/Pagination";
 import {
     Table,
     TableBody,
@@ -13,8 +15,19 @@ import {
     TableRow,
 } from "@/shared/components/ui/table";
 
-export default async function AdminProductsPage() {
-    const allProducts = await db.select().from(products);
+export const dynamic = "force-dynamic";
+
+const PAGE_SIZE = 20;
+
+export default async function AdminProductsPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+    const sp = await searchParams;
+    const currentPage = Math.max(1, parseInt(sp.page || '1', 10) || 1);
+
+    const [allProducts, [{ value: totalCount }]] = await Promise.all([
+        db.select().from(products).orderBy(desc(products.createdAt)).limit(PAGE_SIZE).offset((currentPage - 1) * PAGE_SIZE),
+        db.select({ value: count() }).from(products),
+    ]);
+    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
     return (
         <div className="space-y-6">
@@ -34,7 +47,8 @@ export default async function AdminProductsPage() {
                 </div>
             </div>
 
-            <div className="bg-gunmetal rounded-md border border-warm-gray/10">
+            <div className="bg-gunmetal rounded-md border border-warm-gray/10 overflow-hidden">
+                <div className="overflow-x-auto">
                 <Table>
                     <TableHeader>
                         <TableRow className="border-warm-gray/10 hover:bg-transparent">
@@ -76,7 +90,15 @@ export default async function AdminProductsPage() {
                         )}
                     </TableBody>
                 </Table>
+                </div>
             </div>
+
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                buildHref={(page) => page > 1 ? `/admin/products?page=${page}` : "/admin/products"}
+                className="pt-2"
+            />
         </div>
     );
 }

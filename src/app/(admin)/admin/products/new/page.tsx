@@ -3,7 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/shared/components/ui/button";
 import { db } from "@/shared/lib/db";
-import { categories } from "@/shared/lib/db/schema";
+import { categories, collections } from "@/shared/lib/db/schema";
 import { asc } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
@@ -11,6 +11,9 @@ export const dynamic = "force-dynamic";
 export default async function AddProductPage() {
     const allCategories = await db.query.categories.findMany({
         orderBy: [asc(categories.name)]
+    });
+    const allCollections = await db.query.collections.findMany({
+        orderBy: [asc(collections.name)]
     });
 
     return (
@@ -28,7 +31,7 @@ export default async function AddProductPage() {
             </div>
 
             <div className="bg-gunmetal p-6 rounded-lg shadow-md border border-warm-gray/10">
-                <ProductForm categories={allCategories} />
+                <ProductForm categories={allCategories} collections={allCollections} />
             </div>
         </div>
     );

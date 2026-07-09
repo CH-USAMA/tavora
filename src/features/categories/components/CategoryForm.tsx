@@ -26,6 +26,7 @@ export function CategoryForm({ initialData, categoryId }: CategoryFormProps) {
     const isEditing = !!categoryId;
 
     const form = useForm<CreateCategoryInput>({
+        // @ts-ignore: Zod coerce/default types conflict with RHF resolver types
         resolver: zodResolver(createCategorySchema),
         defaultValues: initialData || {
             name: "",
@@ -71,7 +72,7 @@ export function CategoryForm({ initialData, categoryId }: CategoryFormProps) {
         }
     };
 
-    const onSubmit = async (data: CreateCategoryInput) => {
+    const onSubmit = async (data: any) => {
         setIsSubmitting(true);
         try {
             const res = isEditing 

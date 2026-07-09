@@ -1,8 +1,12 @@
 "use client";
 
-export function WhatsAppButton() {
-    const phone = "923144293848"; // +92 314 4293848 in international format
-    const message = encodeURIComponent("Hi! I'm interested in one of your luxury timepieces from Tavora. Could you help me?");
+interface WhatsAppButtonProps {
+    phone: string;
+    message?: string;
+}
+
+export function WhatsAppButton({ phone, message: rawMessage }: WhatsAppButtonProps) {
+    const message = encodeURIComponent(rawMessage || "Hi! I'm interested in one of your luxury timepieces from Tavora. Could you help me?");
     const whatsappUrl = `https://wa.me/${phone}?text=${message}`;
 
     return (

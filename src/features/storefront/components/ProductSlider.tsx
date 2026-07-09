@@ -20,16 +20,15 @@ type Product = {
 
 interface ProductSliderProps {
     products: Product[];
+    whatsappNumber: string;
 }
-
-const WHATSAPP = "923144293848";
 
 function getDiscountPercent(price: number, salePrice: number | null) {
     if (!salePrice || salePrice <= 0 || salePrice >= price) return null;
     return Math.round(((price - salePrice) / price) * 100);
 }
 
-export function ProductSlider({ products }: ProductSliderProps) {
+export function ProductSlider({ products, whatsappNumber }: ProductSliderProps) {
     const sliderRef = useRef<HTMLDivElement>(null);
 
     const scroll = (direction: "left" | "right") => {
@@ -75,7 +74,7 @@ export function ProductSlider({ products }: ProductSliderProps) {
                 {products.map((product) => {
                     const discount = getDiscountPercent(product.price, product.salePrice);
                     const waMessage = encodeURIComponent(`Hi! I'm interested in buying: ${product.title} (Rs. ${(product.salePrice && product.salePrice > 0 ? product.salePrice : product.price).toLocaleString()}). Can you help me?`);
-                    const waUrl = `https://wa.me/${WHATSAPP}?text=${waMessage}`;
+                    const waUrl = `https://wa.me/${whatsappNumber}?text=${waMessage}`;
 
                     return (
                         <div
@@ -123,9 +122,9 @@ export function ProductSlider({ products }: ProductSliderProps) {
                                 </Link>
                                 <div className="flex items-baseline gap-2 mb-4">
                                     <span className="text-gold font-semibold text-lg">
-                                        Rs. {(product.salePrice && product.salePrice > 0 ? product.salePrice : product.price).toLocaleString()}
+                                        Rs. {(product.salePrice && product.salePrice > 0 && product.salePrice < product.price ? product.salePrice : product.price).toLocaleString()}
                                     </span>
-                                    {product.salePrice != null && product.salePrice > 0 && (
+                                    {product.salePrice != null && product.salePrice > 0 && product.salePrice < product.price && (
                                         <span className="text-warm-gray/40 line-through text-sm">
                                             Rs. {product.price.toLocaleString()}
                                         </span>

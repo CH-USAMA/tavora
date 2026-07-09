@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/shared/components/ui/button";
 import { notFound } from "next/navigation";
 import { db } from "@/shared/lib/db";
-import { categories } from "@/shared/lib/db/schema";
+import { categories, collections } from "@/shared/lib/db/schema";
 import { asc } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +20,9 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
 
     const allCategories = await db.query.categories.findMany({
         orderBy: [asc(categories.name)]
+    });
+    const allCollections = await db.query.collections.findMany({
+        orderBy: [asc(collections.name)]
     });
 
     return (
@@ -37,7 +40,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
             </div>
 
             <div className="bg-gunmetal p-6 rounded-lg shadow-md border border-warm-gray/10">
-                <ProductForm initialData={product as any} productId={product.id} categories={allCategories} />
+                <ProductForm initialData={product as any} productId={product.id} categories={allCategories} collections={allCollections} />
             </div>
         </div>
     );

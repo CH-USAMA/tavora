@@ -80,9 +80,11 @@ export default async function CategoryPage({ params }: Props) {
                                             <h3 className="text-lg font-serif text-white group-hover:text-gold transition-colors line-clamp-1">{product.title}</h3>
                                         </Link>
                                         <div className="flex items-baseline gap-2 mt-auto pt-4">
-                                            <span className="text-gold font-medium">Rs. {product.price.toLocaleString()}</span>
-                                            {product.salePrice != null && product.salePrice > 0 && (
-                                                <span className="text-warm-gray/50 line-through text-sm">Rs. {product.salePrice.toLocaleString()}</span>
+                                            <span className="text-gold font-medium">
+                                                Rs. {(product.salePrice && product.salePrice > 0 && product.salePrice < product.price ? product.salePrice : product.price).toLocaleString()}
+                                            </span>
+                                            {product.salePrice != null && product.salePrice > 0 && product.salePrice < product.price && (
+                                                <span className="text-warm-gray/50 line-through text-sm">Rs. {product.price.toLocaleString()}</span>
                                             )}
                                         </div>
                                     </div>

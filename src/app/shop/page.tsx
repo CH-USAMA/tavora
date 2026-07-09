@@ -1,8 +1,9 @@
 import { db } from "@/shared/lib/db";
 import { products, categories } from "@/shared/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and, asc, desc, count } from "drizzle-orm";
 import { Navbar } from "@/features/storefront/components/Navbar";
 import { Footer } from "@/features/storefront/components/Footer";
+import { Pagination } from "@/shared/components/Pagination";
 import Link from "next/link";
 import Image from "next/image";
 import { Metadata } from "next";
@@ -14,37 +15,48 @@ export const metadata: Metadata = {
     description: "Browse our curated collection of luxury timepieces.",
 };
 
-export default async function ShopPage({ searchParams }: { searchParams: Promise<{ category?: string; sort?: string }> }) {
+const PAGE_SIZE = 12;
+
+export default async function ShopPage({ searchParams }: { searchParams: Promise<{ category?: string; sort?: string; page?: string }> }) {
     const sp = await searchParams;
     const allCategories = await db.select().from(categories).where(eq(categories.isVisible, true));
 
-    let allProducts = await db.select().from(products).where(eq(products.isVisible, true));
-
-    // Filter by category
-    if (sp.category) {
-        const cat = allCategories.find(c => c.slug === sp.category);
-        if (cat) {
-            allProducts = allProducts.filter(p => p.categoryId === cat.id);
-        }
-    }
-
-    // Sort
-    if (sp.sort === 'price-asc') {
-        allProducts.sort((a, b) => a.price - b.price);
-    } else if (sp.sort === 'price-desc') {
-        allProducts.sort((a, b) => b.price - a.price);
-    } else {
-        allProducts.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-    }
-
     const activeCategory = sp.category || null;
     const activeSort = sp.sort || 'newest';
+    const currentPage = Math.max(1, parseInt(sp.page || '1', 10) || 1);
+
+    const cat = activeCategory ? allCategories.find(c => c.slug === activeCategory) : undefined;
+    const whereClause = cat
+        ? and(eq(products.isVisible, true), eq(products.categoryId, cat.id))
+        : eq(products.isVisible, true);
+
+    const orderBy = activeSort === 'price-asc'
+        ? asc(products.price)
+        : activeSort === 'price-desc'
+            ? desc(products.price)
+            : desc(products.createdAt);
+
+    const [allProducts, [{ value: totalCount }]] = await Promise.all([
+        db.select().from(products).where(whereClause).orderBy(orderBy).limit(PAGE_SIZE).offset((currentPage - 1) * PAGE_SIZE),
+        db.select({ value: count() }).from(products).where(whereClause),
+    ]);
+
+    const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
     function buildSortUrl(sort: string) {
         const params = new URLSearchParams();
         if (activeCategory) params.set('category', activeCategory);
         params.set('sort', sort);
         return `/shop?${params.toString()}`;
+    }
+
+    function buildPageUrl(page: number) {
+        const params = new URLSearchParams();
+        if (activeCategory) params.set('category', activeCategory);
+        if (activeSort !== 'newest') params.set('sort', activeSort);
+        if (page > 1) params.set('page', String(page));
+        const qs = params.toString();
+        return qs ? `/shop?${qs}` : '/shop';
     }
 
     return (
@@ -114,7 +126,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                         <div className="flex-grow">
                             <div className="flex items-center justify-between mb-8">
                                 <p className="text-warm-gray/60 text-sm tracking-wider">
-                                    {allProducts.length} {allProducts.length === 1 ? 'Timepiece' : 'Timepieces'}
+                                    {totalCount} {totalCount === 1 ? 'Timepiece' : 'Timepieces'}
                                 </p>
                             </div>
 
@@ -138,7 +150,7 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                                                 {product.isNewArrival && (
                                                     <span className="absolute top-4 left-4 bg-gold text-black text-[10px] tracking-widest uppercase px-3 py-1">New</span>
                                                 )}
-                                                {product.salePrice != null && product.salePrice > 0 && (
+                                                {product.salePrice != null && product.salePrice > 0 && product.salePrice < product.price && (
                                                     <span className="absolute top-4 right-4 bg-red-600 text-white text-[10px] tracking-widest uppercase px-3 py-1">Sale</span>
                                                 )}
                                             </Link>
@@ -148,9 +160,11 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                                                     <h3 className="text-lg font-serif text-white group-hover:text-gold transition-colors line-clamp-1">{product.title}</h3>
                                                 </Link>
                                                 <div className="flex items-baseline gap-2 mt-auto pt-4">
-                                                    <span className="text-gold font-medium">Rs. {product.price.toLocaleString()}</span>
-                                                    {product.salePrice != null && product.salePrice > 0 && (
-                                                        <span className="text-warm-gray/50 line-through text-sm">Rs. {product.salePrice.toLocaleString()}</span>
+                                                    <span className="text-gold font-medium">
+                                                        Rs. {(product.salePrice && product.salePrice > 0 && product.salePrice < product.price ? product.salePrice : product.price).toLocaleString()}
+                                                    </span>
+                                                    {product.salePrice != null && product.salePrice > 0 && product.salePrice < product.price && (
+                                                        <span className="text-warm-gray/50 line-through text-sm">Rs. {product.price.toLocaleString()}</span>
                                                     )}
                                                 </div>
                                             </div>
@@ -158,6 +172,13 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                                     ))}
                                 </div>
                             )}
+
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                buildHref={buildPageUrl}
+                                className="mt-16"
+                            />
                         </div>
                     </div>
                 </div>
