@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { X } from "lucide-react";
+import { CartIcon } from "@/features/cart/components/CartIcon";
 
 const links = [
     { href: "/shop", label: "Shop" },
@@ -31,21 +32,24 @@ export function Navbar() {
                         </Link>
                     ))}
                 </div>
-                {/* Mobile menu button */}
-                <button
-                    className="md:hidden text-warm-gray hover:text-gold transition-colors"
-                    aria-label={menuOpen ? "Close menu" : "Open menu"}
-                    aria-expanded={menuOpen}
-                    onClick={() => setMenuOpen((open) => !open)}
-                >
-                    {menuOpen ? (
-                        <X className="w-6 h-6" />
-                    ) : (
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    )}
-                </button>
+                <div className="flex items-center gap-5">
+                    <CartIcon />
+                    {/* Mobile menu button */}
+                    <button
+                        className="md:hidden text-warm-gray hover:text-gold transition-colors"
+                        aria-label={menuOpen ? "Close menu" : "Open menu"}
+                        aria-expanded={menuOpen}
+                        onClick={() => setMenuOpen((open) => !open)}
+                    >
+                        {menuOpen ? (
+                            <X className="w-6 h-6" />
+                        ) : (
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        )}
+                    </button>
+                </div>
             </div>
 
             {/* Mobile menu panel */}

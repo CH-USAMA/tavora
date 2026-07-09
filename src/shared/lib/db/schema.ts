@@ -93,6 +93,7 @@ export const products = sqliteTable("products", {
     isBestSeller: integer("isBestSeller", { mode: "boolean" }).default(false),
     isNewArrival: integer("isNewArrival", { mode: "boolean" }).default(false),
     isVisible: integer("isVisible", { mode: "boolean" }).default(true),
+    inStock: integer("inStock", { mode: "boolean" }).default(true),
     externalUrl: text("externalUrl"), // Markaz dropshipping URL
     imageUrl: text("imageUrl"),
     seoTitle: text("seoTitle"),
@@ -141,6 +142,30 @@ export const settings = sqliteTable("settings", {
     value: text("value", { mode: "json" }),
     createdAt: integer("createdAt", { mode: "timestamp" }).notNull(),
     updatedAt: integer("updatedAt", { mode: "timestamp" }).notNull(),
+});
+
+export const orders = sqliteTable("orders", {
+    id: text("id").primaryKey(),
+    orderNumber: text("orderNumber").notNull().unique(),
+    customerName: text("customerName").notNull(),
+    customerPhone: text("customerPhone").notNull(),
+    customerAddress: text("customerAddress"),
+    notes: text("notes"),
+    subtotal: real("subtotal").notNull(),
+    status: text("status").notNull().default("pending"), // pending, confirmed, shipped, delivered, cancelled
+    createdAt: integer("createdAt", { mode: "timestamp" }).notNull(),
+    updatedAt: integer("updatedAt", { mode: "timestamp" }).notNull(),
+});
+
+export const orderItems = sqliteTable("order_items", {
+    id: text("id").primaryKey(),
+    orderId: text("orderId").notNull().references(() => orders.id, { onDelete: "cascade" }),
+    productId: text("productId").references(() => products.id),
+    productTitle: text("productTitle").notNull(),
+    productImage: text("productImage"),
+    unitPrice: real("unitPrice").notNull(),
+    quantity: integer("quantity").notNull().default(1),
+    lineTotal: real("lineTotal").notNull(),
 });
 
 export const auditLogs = sqliteTable("audit_logs", {

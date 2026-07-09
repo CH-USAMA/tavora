@@ -4,6 +4,7 @@ import { eq, and, asc, desc, count } from "drizzle-orm";
 import { Navbar } from "@/features/storefront/components/Navbar";
 import { Footer } from "@/features/storefront/components/Footer";
 import { Pagination } from "@/shared/components/Pagination";
+import { AddToCartButton } from "@/features/cart/components/AddToCartButton";
 import Link from "next/link";
 import Image from "next/image";
 import { Metadata } from "next";
@@ -153,19 +154,29 @@ export default async function ShopPage({ searchParams }: { searchParams: Promise
                                                 {product.salePrice != null && product.salePrice > 0 && product.salePrice < product.price && (
                                                     <span className="absolute top-4 right-4 bg-red-600 text-white text-[10px] tracking-widest uppercase px-3 py-1">Sale</span>
                                                 )}
+                                                {product.inStock === false && (
+                                                    <span className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-xs tracking-widest uppercase font-medium">Out of Stock</span>
+                                                )}
                                             </Link>
                                             <div className="p-6 flex flex-col flex-grow">
                                                 <p className="text-gold/60 text-[10px] tracking-[0.2em] uppercase mb-2">{product.brand || 'Tavora'}</p>
                                                 <Link href={`/product/${product.slug}`}>
                                                     <h3 className="text-lg font-serif text-white group-hover:text-gold transition-colors line-clamp-1">{product.title}</h3>
                                                 </Link>
-                                                <div className="flex items-baseline gap-2 mt-auto pt-4">
+                                                <div className="flex items-baseline gap-2 mt-4">
                                                     <span className="text-gold font-medium">
                                                         Rs. {(product.salePrice && product.salePrice > 0 && product.salePrice < product.price ? product.salePrice : product.price).toLocaleString()}
                                                     </span>
                                                     {product.salePrice != null && product.salePrice > 0 && product.salePrice < product.price && (
                                                         <span className="text-warm-gray/50 line-through text-sm">Rs. {product.price.toLocaleString()}</span>
                                                     )}
+                                                </div>
+                                                <div className="mt-auto pt-4">
+                                                    <AddToCartButton
+                                                        product={product}
+                                                        inStock={product.inStock}
+                                                        className="flex items-center justify-center gap-2 w-full py-2.5 bg-gold/10 border border-gold/30 text-gold hover:bg-gold hover:text-black transition-all duration-300 text-xs tracking-widest uppercase font-medium disabled:opacity-40 disabled:cursor-not-allowed"
+                                                    />
                                                 </div>
                                             </div>
                                         </div>

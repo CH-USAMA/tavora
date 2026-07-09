@@ -3,6 +3,7 @@ import { Playfair_Display, Inter } from "next/font/google";
 import { Toaster } from "@/shared/components/ui/sonner";
 import { WhatsAppButton } from "@/features/storefront/components/WhatsAppButton";
 import { SettingsService } from "@/features/settings/service";
+import { CartProvider } from "@/features/cart/CartContext";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -43,8 +44,10 @@ export default async function RootLayout({
       className={`${playfair.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
-        {children}
-        <WhatsAppButton phone={settings.whatsappNumber} message={settings.whatsappMessage} />
+        <CartProvider>
+          {children}
+          <WhatsAppButton phone={settings.whatsappNumber} message={settings.whatsappMessage} />
+        </CartProvider>
         <Toaster richColors position="top-right" />
       </body>
     </html>

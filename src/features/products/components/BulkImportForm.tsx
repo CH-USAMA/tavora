@@ -71,6 +71,7 @@ export function BulkImportForm({ categories, collections }: BulkImportFormProps)
                             isBestSeller: String(row.isBestSeller).toLowerCase() === 'true',
                             isNewArrival: String(row.isNewArrival).toLowerCase() === 'true',
                             isVisible: String(row.isVisible).toLowerCase() !== 'false',
+                            inStock: String(row.inStock).toLowerCase() !== 'false',
                             isFeatured: String(row.isFeatured).toLowerCase() === 'true',
                             images: row.images ? row.images.split(",").map((s: string) => s.trim()).filter(Boolean) : []
                         };
@@ -102,8 +103,8 @@ export function BulkImportForm({ categories, collections }: BulkImportFormProps)
     };
 
     const handleDownloadSample = () => {
-        const sampleHeaders = ["title", "price", "sku", "salePrice", "brand", "description", "category", "collection", "images", "isBestSeller", "isNewArrival", "isFeatured", "isVisible"];
-        const sampleRow = ["Rolex Submariner", "1500000", "TAV-ROLEX-SUB", "1450000", "Rolex", "<p>A classic timepiece.</p>", categories[0]?.slug || "", collections[0]?.slug || "", "https://example.com/image1.jpg, https://example.com/image2.jpg", "true", "true", "false", "true"];
+        const sampleHeaders = ["title", "price", "sku", "salePrice", "brand", "description", "category", "collection", "images", "isBestSeller", "isNewArrival", "isFeatured", "isVisible", "inStock"];
+        const sampleRow = ["Rolex Submariner", "1500000", "TAV-ROLEX-SUB", "1450000", "Rolex", "<p>A classic timepiece.</p>", categories[0]?.slug || "", collections[0]?.slug || "", "https://example.com/image1.jpg, https://example.com/image2.jpg", "true", "true", "false", "true", "true"];
         const csvContent = [sampleHeaders.join(","), sampleRow.join(",")].join("\n");
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -143,6 +144,7 @@ export function BulkImportForm({ categories, collections }: BulkImportFormProps)
                             <li>• <code className="text-gold">isNewArrival</code> (Optional, true/false)</li>
                             <li>• <code className="text-gold">isFeatured</code> (Optional, true/false)</li>
                             <li>• <code className="text-gold">isVisible</code> (Optional, true/false)</li>
+                            <li>• <code className="text-gold">inStock</code> (Optional, true/false)</li>
                         </ul>
                         {categories.length > 0 && (
                             <p className="text-xs text-warm-gray/60 mt-3">

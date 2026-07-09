@@ -45,6 +45,7 @@ export function ProductForm({ initialData, productId, categories = [], collectio
             categoryId: null,
             collectionId: null,
             isVisible: true,
+            inStock: true,
             isFeatured: false,
             isBestSeller: false,
             isNewArrival: false,
@@ -257,19 +258,28 @@ export function ProductForm({ initialData, productId, categories = [], collectio
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-charcoal rounded-md border border-warm-gray/10">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 p-4 bg-charcoal rounded-md border border-warm-gray/10">
                 <div className="flex items-center space-x-2">
-                    <Checkbox 
-                        id="isVisible" 
-                        checked={form.watch("isVisible")} 
-                        onCheckedChange={(checked) => form.setValue("isVisible", checked as boolean)} 
+                    <Checkbox
+                        id="isVisible"
+                        checked={form.watch("isVisible")}
+                        onCheckedChange={(checked) => form.setValue("isVisible", checked as boolean)}
                         className="border-warm-gray data-[state=checked]:bg-gold data-[state=checked]:text-black"
                     />
                     <Label htmlFor="isVisible" className="text-warm-gray text-sm">Visible</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <Checkbox 
-                        id="isFeatured" 
+                    <Checkbox
+                        id="inStock"
+                        checked={form.watch("inStock")}
+                        onCheckedChange={(checked) => form.setValue("inStock", checked as boolean)}
+                        className="border-warm-gray data-[state=checked]:bg-gold data-[state=checked]:text-black"
+                    />
+                    <Label htmlFor="inStock" className="text-warm-gray text-sm">In Stock</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <Checkbox
+                        id="isFeatured"
                         checked={form.watch("isFeatured")} 
                         onCheckedChange={(checked) => form.setValue("isFeatured", checked as boolean)}
                         className="border-warm-gray data-[state=checked]:bg-gold data-[state=checked]:text-black"

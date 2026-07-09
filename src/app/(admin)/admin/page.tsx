@@ -1,8 +1,8 @@
 import { db } from "@/shared/lib/db";
-import { products, categories, collections, testimonials, settings } from "@/shared/lib/db/schema";
+import { products, categories, collections, testimonials, settings, orders } from "@/shared/lib/db/schema";
 import { count, eq, desc } from "drizzle-orm";
 import Link from "next/link";
-import { Package, Eye, EyeOff, Folders, Layers, Star, Plus, CheckCircle2, Circle } from "lucide-react";
+import { Package, Eye, EyeOff, Folders, Layers, Star, Plus, CheckCircle2, Circle, ShoppingBag, Clock } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import {
     Table,
@@ -22,6 +22,8 @@ export default async function AdminDashboardPage() {
         [{ value: categoryCount }],
         [{ value: collectionCount }],
         [{ value: testimonialCount }],
+        [{ value: totalOrders }],
+        [{ value: pendingOrders }],
         siteSettingsRow,
         recentProducts,
     ] = await Promise.all([
@@ -30,6 +32,8 @@ export default async function AdminDashboardPage() {
         db.select({ value: count() }).from(categories),
         db.select({ value: count() }).from(collections),
         db.select({ value: count() }).from(testimonials),
+        db.select({ value: count() }).from(orders),
+        db.select({ value: count() }).from(orders).where(eq(orders.status, "pending")),
         db.query.settings.findFirst({ where: eq(settings.key, "site") }),
         db.select().from(products).orderBy(desc(products.createdAt)).limit(5),
     ]);
@@ -37,6 +41,8 @@ export default async function AdminDashboardPage() {
     const draftProducts = totalProducts - visibleProducts;
 
     const stats = [
+        { name: "Pending Orders", value: pendingOrders, icon: Clock, href: "/admin/orders" },
+        { name: "Total Orders", value: totalOrders, icon: ShoppingBag, href: "/admin/orders" },
         { name: "Total Products", value: totalProducts, icon: Package, href: "/admin/products" },
         { name: "Live Products", value: visibleProducts, icon: Eye, href: "/admin/products" },
         { name: "Draft Products", value: draftProducts, icon: EyeOff, href: "/admin/products" },
@@ -53,6 +59,7 @@ export default async function AdminDashboardPage() {
     ];
 
     const quickActions = [
+        { label: "View Orders", href: "/admin/orders" },
         { label: "Add Product", href: "/admin/products/new" },
         { label: "Add Category", href: "/admin/categories/new" },
         { label: "Add Collection", href: "/admin/collections/new" },
@@ -62,7 +69,7 @@ export default async function AdminDashboardPage() {
 
     return (
         <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                 {stats.map((item) => (
                     <Link
                         key={item.name}

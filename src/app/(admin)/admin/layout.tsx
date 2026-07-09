@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Package, Folders, Images, Settings, LogOut, Home, Users, Star, Menu, X } from "lucide-react";
+import { LayoutDashboard, Package, Folders, Images, Settings, LogOut, Home, Users, Star, Menu, X, ShoppingBag } from "lucide-react";
 import { authClient } from "@/shared/lib/auth/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const navigation = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
     { name: "Products", href: "/admin/products", icon: Package },
     { name: "Categories", href: "/admin/categories", icon: Folders },
     { name: "Collections", href: "/admin/collections", icon: Folders },

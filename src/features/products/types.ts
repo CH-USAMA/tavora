@@ -12,6 +12,7 @@ export const createProductSchema = z.object({
   categoryId: z.string().optional().nullable(),
   collectionId: z.string().optional().nullable(),
   isVisible: z.boolean().default(true),
+  inStock: z.boolean().default(true),
   isFeatured: z.boolean().default(false),
   isBestSeller: z.boolean().default(false),
   isNewArrival: z.boolean().default(false),
