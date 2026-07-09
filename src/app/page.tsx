@@ -4,6 +4,8 @@ import { FeaturedProducts } from "@/features/storefront/components/FeaturedProdu
 import { AboutSection } from "@/features/storefront/components/AboutSection";
 import { Footer } from "@/features/storefront/components/Footer";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <>

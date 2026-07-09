@@ -10,6 +10,7 @@ export async function createProductAction(data: CreateProductInput) {
         await requireAdmin();
         const product = await ProductService.createProduct(data);
         revalidatePath("/admin/products");
+        revalidatePath("/");
         return { success: true, product };
     } catch (error: any) {
         console.error("Failed to create product:", error);
@@ -22,6 +23,7 @@ export async function updateProductAction(id: string, data: CreateProductInput) 
         const product = await ProductService.updateProduct(id, data);
         revalidatePath("/admin/products");
         revalidatePath(`/product/${product.slug}`);
+        revalidatePath("/");
         return { success: true, product };
     } catch (error: any) {
         console.error("Failed to update product:", error);
@@ -34,6 +36,7 @@ export async function deleteProductAction(id: string) {
         await requireAdmin();
         await ProductService.deleteProduct(id);
         revalidatePath("/admin/products");
+        revalidatePath("/");
         return { success: true };
     } catch (error: any) {
         console.error("Failed to delete product:", error);
