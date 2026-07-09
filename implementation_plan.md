@@ -139,14 +139,17 @@ Turso (LibSQL)
 
 | # | Milestone | Status |
 |---|-----------|--------|
-| 1 | Foundation & Design System | 🔜 Next |
-| 2 | Database & ORM | ⏳ |
-| 3 | Authentication | ⏳ |
-| 4 | Admin Dashboard | ⏳ |
-| 5 | Storefront Pages | ⏳ |
-| 6 | Product Detail Page | ⏳ |
-| 7 | SEO & Performance | ⏳ |
-| 8 | Polish & Launch | ⏳ |
+| 1 | Foundation & Design System | ✅ Done |
+| 2 | Database & ORM | ✅ Done (Turso + Drizzle, 14 tables incl. orders) |
+| 3 | Authentication | ✅ Done (Better Auth, admin-role middleware + per-action checks) |
+| 4 | Admin Dashboard | ✅ Done (Products, Categories, Collections, Testimonials, Homepage, Media, Orders, Settings) |
+| 5 | Storefront Pages | ✅ Done (Home, Shop, Category, Product, Cart, Checkout) |
+| 6 | Product Detail Page | ✅ Done |
+| 7 | SEO & Performance | ✅ Basics done (sitemap, robots, metadata, pagination); Lighthouse audit not yet run |
+| 8 | Polish & Launch | ✅ Live at tavora-hazel.vercel.app; payment gateway still pending (see `.ai/project.md` roadmap) |
+
+See `.ai/decisions.md` for what changed since this plan was written (notably: cart +
+WhatsApp checkout replaced the original "redirect straight to Markaz" flow — decision #7).
 
 ---
 
