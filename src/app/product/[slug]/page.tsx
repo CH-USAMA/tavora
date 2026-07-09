@@ -9,7 +9,26 @@ import { ArrowLeft } from "lucide-react";
 import { Metadata } from "next";
 import { ProductGallery } from "@/features/products/components/ProductGallery";
 import { SettingsService } from "@/features/settings/service";
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtml from "sanitize-html";
+
+const sanitizeOptions: sanitizeHtml.IOptions = {
+    allowedTags: [
+        "p", "br", "strong", "b", "em", "i", "u", "s", "strike",
+        "ol", "ul", "li", "a", "span", "blockquote",
+        "h1", "h2", "h3", "h4", "h5", "h6", "sub", "sup",
+    ],
+    allowedAttributes: {
+        a: ["href", "target", "rel"],
+        span: ["style"],
+    },
+    allowedStyles: {
+        "*": {
+            color: [/^#[0-9a-fA-F]{3,6}$/, /^rgb\(/],
+            "background-color": [/^#[0-9a-fA-F]{3,6}$/, /^rgb\(/],
+        },
+    },
+    allowedSchemes: ["http", "https", "mailto", "tel"],
+};
 
 export const dynamic = "force-dynamic";
 
@@ -77,7 +96,7 @@ export default async function ProductDetailPage({ params }: Props) {
                             </div>
                             <div className="prose prose-invert prose-p:text-warm-gray prose-p:font-light prose-p:leading-relaxed mb-12">
                                 {product.description ? (
-                                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description) }} />
+                                    <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.description, sanitizeOptions) }} />
                                 ) : (
                                     <p>An exquisite piece crafted with precision and elegance.</p>
                                 )}
